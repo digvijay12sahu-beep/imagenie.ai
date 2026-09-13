@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>DreamCanvas AI</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  background:#07070a;
+  color:#f5f5f5;
+  font-family:Inter,Arial,sans-serif;
+  min-height:100vh;
+}
+
+header{
+  height:76px;
+  border-bottom:1px solid #202027;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 6%;
+  background:#0b0b0f;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:21px;
+  font-weight:800;
+}
+
+.logo{
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#ff4ecd,#7c5cff);
+}
+
+.credit{
+  background:#15151c;
+  border:1px solid #292934;
+  padding:9px 16px;
+  border-radius:30px;
+  color:#cfcfd7;
+}
+
+.hero{
+  text-align:center;
+  padding:65px 20px 35px;
+}
+
+.badge{
+  display:inline-block;
+  padding:7px 13px;
+  border-radius:30px;
+  background:#17121e;
+  border:1px solid #35213f;
+  color:#dca7ff;
+  font-size:13px;
+  margin-bottom:18px;
+}
+
+h1{
+  font-size:clamp(40px,7vw,76px);
+  letter-spacing:-3px;
+  line-height:1;
+}
+
+.gradient{
+  background:linear-gradient(90deg,#ff65d8,#9b7cff,#55c7ff);
+  -webkit-background-clip:text;
+  color:transparent;
+}
+
+.subtitle{
+  color:#858590;
+  max-width:650px;
+  margin:20px auto 0;
+  font-size:17px;
+  line-height:1.6;
+}
+
+.wrapper{
+  width:min(1100px,92%);
+  margin:auto;
+  padding-bottom:80px;
+}
+
+.generator{
+  background:#101014;
+  border:1px solid #26262e;
+  border-radius:25px;
+  padding:25px;
+}
+
+.prompt-title{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+
+.prompt-title span{
+  color:#858590;
+  font-size:13px;
+}
+
+textarea{
+  width:100%;
+  height:170px;
+  resize:vertical;
+  background:#09090d;
+  border:1px solid #292932;
+  border-radius:17px;
+  padding:18px;
+  color:white;
+  outline:none;
+  font-size:16px;
+  line-height:1.6;
+}
+
+textarea:focus{
+  border-color:#8d6cff;
+}
+
+.options{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:15px;
+  margin-top:18px;
+}
+
+.option label{
+  display:block;
+  color:#858590;
+  font-size:13px;
+  margin-bottom:8px;
+}
+
+select{
+  width:100%;
+  background:#09090d;
+  color:#fff;
+  border:1px solid #292932;
+  border-radius:12px;
+  padding:13px;
+  outline:none;
+}
+
+.generate{
+  width:100%;
+  margin-top:20px;
+  border:none;
+  padding:17px;
+  border-radius:14px;
+  font-size:16px;
+  font-weight:800;
+  color:white;
+  cursor:pointer;
+  background:linear-gradient(90deg,#e83ebd,#765cff);
+  transition:.2s;
+}
+
+.generate:hover{
+  transform:translateY(-1px);
+  filter:brightness(1.1);
+}
+
+.result{
+  margin-top:25px;
+  display:none;
+}
+
+.result-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.result-head h2{
+  font-size:19px;
+}
+
+.image-box{
+  min-height:420px;
+  border-radius:20px;
+  border:1px solid #292932;
+  background:#09090d;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+}
+
+.image-box img{
+  max-width:100%;
+  max-height:700px;
+  display:none;
+}
+
+.empty{
+  text-align:center;
+  color:#555560;
+}
+
+.empty div{
+  font-size:45px;
+  margin-bottom:10px;
+}
+
+.loading{
+  display:none;
+  text-align:center;
+  color:#aaa;
+}
+
+.spinner{
+  width:42px;
+  height:42px;
+  border:3px solid #292932;
+  border-top-color:#a879ff;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+  margin:auto auto 15px;
+}
+
+@keyframes spin{
+  to{transform:rotate(360deg)}
+}
+
+.actions{
+  display:none;
+  gap:10px;
+  margin-top:13px;
+}
+
+.action{
+  flex:1;
+  padding:13px;
+  border-radius:11px;
+  border:1px solid #2a2a34;
+  background:#17171d;
+  color:white;
+  cursor:pointer;
+}
+
+footer{
+  border-top:1px solid #202027;
+  padding:30px;
+  text-align:center;
+  color:#55555e;
+}
+
+@media(max-width:700px){
+  .options{
+    grid-template-columns:1fr;
+  }
+
+  h1{
+    letter-spacing:-2px;
+  }
+
+  .generator{
+    padding:17px;
+  }
+
+  .image-box{
+    min-height:300px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="brand">
+  <div class="logo">✦</div>
+  DreamCanvas AI
+</div>
+
+<div class="credit">
+  ⚡ <span id="credits">50</span> credits
+</div>
+
+</header>
+
+
+<section class="hero">
+
+<div class="badge">✦ AI IMAGE GENERATOR</div>
+
+<h1>
+Turn words into<br>
+<span class="gradient">visuals.</span>
+</h1>
+
+<p class="subtitle">
+Describe anything you can imagine and create a unique AI-generated
+image from your prompt.
+</p>
+
+</section>
+
+
+<main class="wrapper">
+
+<div class="generator">
+
+<div class="prompt-title">
+<strong>Your prompt</strong>
+<span id="counter">0 / 1000</span>
+</div>
+
+<textarea
+id="prompt"
+maxlength="1000"
+placeholder="Describe the image you want to create...
+
+Example:
+A futuristic city floating above the clouds at sunset,
+cinematic lighting, ultra detailed architecture..."
+></textarea>
+
+
+<div class="options">
+
+<div class="option">
+<label>Style</label>
+
+<select id="style">
+<option>Photorealistic</option>
+<option>Cinematic</option>
+<option>Anime</option>
+<option>Digital Art</option>
+<option>3D Render</option>
+<option>Fantasy</option>
+</select>
+</div>
+
+
+<div class="option">
+<label>Aspect ratio</label>
+
+<select id="ratio">
+<option value="square">1 : 1</option>
+<option value="portrait">9 : 16</option>
+<option value="landscape">16 : 9</option>
+<option value="classic">4 : 3</option>
+</select>
+</div>
+
+
+<div class="option">
+<label>Quality</label>
+
+<select id="quality">
+<option>Standard</option>
+<option>High Detail</option>
+</select>
+</div>
+
+</div>
+
+
+<button class="generate" onclick="generateImage()">
+✦ Generate Image · 5 credits
+</button>
+
+
+<div class="result" id="result">
+
+<div class="result-head">
+<h2>Generated image</h2>
+</div>
+
+<div class="image-box">
+
+<div class="empty" id="empty">
+<div>✦</div>
+Your creation will appear here
+</div>
+
+<div class="loading" id="loading">
+
+<div class="spinner"></div>
+
+Generating your image...
+
+</div>
+
+<img id="generatedImage">
+
+</div>
+
+
+<div class="actions" id="actions">
+
+<button class="action" onclick="downloadImage()">
+↓ Download
+</button>
+
+<button class="action" onclick="generateImage()">
+↻ Generate Again
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</main>
+
+
+<footer>
+DreamCanvas AI · Imagine anything.
+</footer>
+
+
+<script>
+
+let credits = 50;
+let currentImage = "";
+
+const promptBox = document.getElementById("prompt");
+const counter = document.getElementById("counter");
+
+promptBox.addEventListener("input", () => {
+  counter.textContent =
+    promptBox.value.length + " / 1000";
+});
+
+
+async function generateImage(){
+
+  const prompt = promptBox.value.trim();
+
+  if(!prompt){
+    alert("Please describe the image you want.");
+    return;
+  }
+
+  if(credits < 5){
+    alert("Not enough credits.");
+    return;
+  }
+
+  credits -= 5;
+  document.getElementById("credits").textContent = credits;
+
+  const result = document.getElementById("result");
+  const empty = document.getElementById("empty");
+  const loading = document.getElementById("loading");
+  const image = document.getElementById("generatedImage");
+  const actions = document.getElementById("actions");
+
+  result.style.display = "block";
+  empty.style.display = "none";
+  image.style.display = "none";
+  actions.style.display = "none";
+  loading.style.display = "block";
+
+  /*
+    BACKEND CONNECTION WILL GO HERE.
+
+    Do NOT put a secret API key in this file.
+
+    Example later:
+
+    const response = await fetch("/api/generate", {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        prompt:prompt,
+        style:document.getElementById("style").value,
+        ratio:document.getElementById("ratio").value
+      })
+    });
+
+    const data = await response.json();
+
+    image.src = data.image;
+  */
+
+
+  // Temporary demo image.
+  // Replace this section with the real AI backend.
+  setTimeout(() => {
+
+    loading.style.display = "none";
+
+    image.src =
+      "https://placehold.co/1024x1024/111118/ffffff?text=AI+IMAGE";
+
+    image.style.display = "block";
+    actions.style.display = "flex";
+
+  },1800);
+}
+
+
+function downloadImage(){
+
+  if(!currentImage){
+    alert("The real AI backend is not connected yet.");
+    return;
+  }
+
+  const link = document.createElement("a");
+
+  link.href = currentImage;
+  link.download = "dreamcanvas-ai.png";
+
+  link.click();
+}
+
+</script>
+
+</body>
+</html>
